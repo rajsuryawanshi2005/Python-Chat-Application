@@ -23,10 +23,10 @@ class ChatClient:
         )
 
         # ===== CHAT AREA =====
-        self.chat_canvas = tk.Canvas(self.window, bg="#1e1e1e")
+        self.chat_canvas = tk.Canvas(self.window, bg="#f9dd90")
         self.chat_canvas.pack(fill=tk.BOTH, expand=True)
 
-        self.chat_frame = tk.Frame(self.chat_canvas, bg="#1e1e1e")
+        self.chat_frame = tk.Frame(self.chat_canvas, bg="#f9dd90")
         self.chat_canvas.create_window((0, 0), window=self.chat_frame, anchor="nw")
 
         self.chat_frame.bind(
@@ -69,27 +69,46 @@ class ChatClient:
     # ===== CHAT BUBBLE =====
     def add_message(self, message):
 
-        bubble = tk.Frame(self.chat_frame, bg="#2ecc71", padx=10, pady=5)
+        is_my_message = message.startswith(self.nickname + ":")
+
+        if is_my_message:
+            bubble_color = "#2ecc71"
+            align = "e"
+            avatar_color = "#27ae60"
+        else:
+            bubble_color = "#ecf0f1"
+            align = "w"
+            avatar_color = "#4feaf5"
+
+        bubble = tk.Frame(self.chat_frame, bg=self.chat_frame["bg"], pady=5)
 
         avatar = tk.Label(
             bubble,
-            text=self.nickname[0].upper(),
-            bg="#16a085",
+            text=message.split(":")[0][0].upper(),
+            bg=avatar_color,
             fg="white",
-            width=2
+            width=2,
+            font=("Arial", 10, "bold")
         )
-        avatar.pack(side=tk.LEFT, padx=5)
 
         msg = tk.Label(
             bubble,
             text=message,
-            bg="#2ecc71",
-            wraplength=400,
+            bg=bubble_color,
+            padx=10,
+            pady=5,
+            wraplength=350,
             justify="left"
         )
-        msg.pack(side=tk.LEFT)
 
-        bubble.pack(anchor="w", pady=5, padx=10)
+        if is_my_message:
+            msg.pack(side="right", padx=5)
+            avatar.pack(side="right")
+        else:
+            avatar.pack(side="left")
+            msg.pack(side="left", padx=5)
+
+        bubble.pack(anchor=align, padx=10, pady=5)
 
     # ===== SEND MESSAGE =====
     def send_message(self):
